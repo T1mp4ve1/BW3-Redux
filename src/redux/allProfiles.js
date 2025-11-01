@@ -1,19 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-export const fetchProfile = createAsyncThunk(
-  "profile/fetchProfile",
-  async (userId, { rejectWithValue }) => {
+export const fetchAllProfile = createAsyncThunk(
+  "allProfile/fetchProfile",
+  async (_, { rejectWithValue }) => {
     try {
       const API_KEY = import.meta.env.VITE_MY_SECRET_KEY;
       const res = await fetch(
-        `https://striveschool-api.herokuapp.com/api/profile/${userId}`,
+        "https://striveschool-api.herokuapp.com/api/profile",
         {
           headers: { Authorization: `Bearer ${API_KEY}` },
         }
       );
 
       if (!res.ok) {
-        throw new Error("Errore nel caricamento del profilo");
+        throw new Error("Errore nel caricamento del profili");
       }
 
       const dataRecived = await res.json();
@@ -24,31 +24,29 @@ export const fetchProfile = createAsyncThunk(
   }
 );
 
-const profileSlice = createSlice({
-  name: "profile",
+const allProfileSlice = createSlice({
+  name: "allProfile",
   initialState: {
     data: null,
-    // userId: null,
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProfile.pending, (state) => {
+      .addCase(fetchAllProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchProfile.fulfilled, (state, action) => {
+      .addCase(fetchAllProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
-        // state.userId = action.payload._id;
       })
-      .addCase(fetchProfile.rejected, (state, action) => {
+      .addCase(fetchAllProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
 
-export default profileSlice.reducer;
+export default allProfileSlice.reducer;

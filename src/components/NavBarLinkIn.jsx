@@ -8,16 +8,19 @@ import {
   Col,
   Card,
   Dropdown,
+  Spinner,
 } from "react-bootstrap";
 import "./css/NavBarLinkIn.css";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchProfile } from "../redux/profileSlice";
-// import profileImage from "../assets/pavel.jpg";
 
 const NavBarLinkIn = () => {
+  const [showDropDown, setShowDropDown] = useState(false);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userId = "68f5e9246dfc200015d3988a";
   const {
     data: profileData,
     loading,
@@ -25,16 +28,33 @@ const NavBarLinkIn = () => {
   } = useSelector((state) => state.myProfile);
 
   useEffect(() => {
-    dispatch(fetchProfile());
+    dispatch(fetchProfile(userId));
   }, [dispatch]);
 
-  if (loading) return <p>Caricamento profilo...</p>;
+  const handleHideToggle = () => {
+    setShowDropDown(false);
+    navigate(`/profile/${userId}`);
+  };
+
+  if (loading)
+    return (
+      <Spinner animation="border" variant="primary" className="text-center" />
+    );
+
   if (error) return <p>Errore: {error}</p>;
 
   return (
     <Navbar className="bg-light py-1 border-bottom fixed-top">
-      <Container className="d-flex justify-content-center align-content-center navBarContainer m-xs-0 m-lg-auto">
-        <Row className="m-0 w-80">
+      <Container
+        fluid
+        className="d-flex justify-content-center align-content-center navBarContainer"
+      >
+        <Row
+          className="m-0"
+          style={{
+            width: "60%",
+          }}
+        >
           <Col
             xs={2}
             lg={4}
@@ -95,7 +115,11 @@ const NavBarLinkIn = () => {
               </Link>
 
               {/* dropdown Tu */}
-              <Dropdown className="d-flex flex-column align-items-center mx-1">
+              <Dropdown
+                className="d-flex flex-column align-items-center mx-1"
+                show={showDropDown}
+                onToggle={(isOpen) => setShowDropDown(isOpen)}
+              >
                 <Dropdown.Toggle
                   variant="light"
                   className="d-flex flex-column align-items-center justify-content-center border-0 bg-transparent p-0"
@@ -103,7 +127,11 @@ const NavBarLinkIn = () => {
                   <div className="d-flex flex-column">
                     <img
                       className="rounded-5"
-                      src={profileData?.image || "qwrdfg"}
+                      src={
+                        profileData?.image || (
+                          <Spinner animation="border" variant="primary" />
+                        )
+                      }
                       alt="profileImage"
                     />
                     <div className="d-none d-lg-flex text-muted">
@@ -135,7 +163,11 @@ const NavBarLinkIn = () => {
                     <div className="d-flex">
                       <img
                         className="rounded-5 me-2"
-                        src={profileData?.image || "qwrdfg"}
+                        src={
+                          profileData?.image || (
+                            <Spinner animation="border" variant="primary" />
+                          )
+                        }
                         alt="profileImage"
                         style={{
                           width: "55px",
@@ -144,7 +176,7 @@ const NavBarLinkIn = () => {
                       />
                       <div>
                         <h6 className="m-0">
-                          {"profileData.name"} {"profileData.surname"}
+                          {profileData?.name} {profileData?.surname}
                         </h6>
                         <p
                           style={{
@@ -156,27 +188,19 @@ const NavBarLinkIn = () => {
                       </div>
                     </div>
                     <div className="border-bottom pb-2">
-                      <Link
-                        to={"/profile"}
-                        className="d-flex justify-content-center"
-                        style={{
-                          textDecoration: "none",
-                        }}
+                      <button
+                        className="rounded-5 fw-semibold mt-1 customButton"
+                        onClick={() => handleHideToggle()}
                       >
-                        <Button
-                          variant="outline-primary"
-                          className="rounded-5 w-50 mt-1"
+                        <p
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                          }}
                         >
-                          <p
-                            style={{
-                              fontSize: 14,
-                              fontWeight: 600,
-                            }}
-                          >
-                            Visualiza profilo
-                          </p>
-                        </Button>
-                      </Link>
+                          Visualiza profilo
+                        </p>
+                      </button>
                     </div>
                     <div className="my-2 d-flex flex-column border-bottom pb-2">
                       <h6>Account</h6>

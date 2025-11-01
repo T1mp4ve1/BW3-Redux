@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-export const fetchProfile = createAsyncThunk(
-  "profile/fetchProfile",
+export const fetchOtherUser = createAsyncThunk(
+  "profile/fetchOtherUser",
   async (userId, { rejectWithValue }) => {
     try {
       const API_KEY = import.meta.env.VITE_MY_SECRET_KEY;
@@ -11,11 +11,9 @@ export const fetchProfile = createAsyncThunk(
           headers: { Authorization: `Bearer ${API_KEY}` },
         }
       );
-
       if (!res.ok) {
-        throw new Error("Errore nel caricamento del profilo");
+        throw new Error("Errore nel caricamento del altro profilo");
       }
-
       const dataRecived = await res.json();
       return dataRecived;
     } catch (err) {
@@ -24,31 +22,28 @@ export const fetchProfile = createAsyncThunk(
   }
 );
 
-const profileSlice = createSlice({
-  name: "profile",
+const otherProfileSlice = createSlice({
+  name: "otherProfile",
   initialState: {
     data: null,
-    // userId: null,
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProfile.pending, (state) => {
+      .addCase(fetchOtherUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchProfile.fulfilled, (state, action) => {
+      .addCase(fetchOtherUser.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
-        // state.userId = action.payload._id;
       })
-      .addCase(fetchProfile.rejected, (state, action) => {
+      .addCase(fetchOtherUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
-
-export default profileSlice.reducer;
+export default otherProfileSlice.reducer;
